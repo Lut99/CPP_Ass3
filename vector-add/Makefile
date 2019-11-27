@@ -4,10 +4,12 @@ CC		= g++
 CU_FLAGS	= -O3 -g --ptxas-options=-v -arch compute_20 -code sm_20
 CC_FLAGS	= -O3 -m64 -Wall
 
-CU_SOURCES	= vector-add.cu
+CU_SOURCES	= vector-add.cu simulation.cu
+OUR_CU_SOURCES	= simulation.cu
 CC_SOURCES	= timer.cc
 
 CU_OBJECTS	= $(CU_SOURCES:%.cu=%.o)
+OUT_CU_OBJECTS = $(OUR_CU_SOURCES:%.cu=%.o)
 CU_PTX		= $(CU_SOURCES:%.cu=%.ptx)
 CC_OBJECTS	= $(CC_SOURCES:%.cc=%.o)
 
@@ -21,6 +23,9 @@ CC_OBJECTS	= $(CC_SOURCES:%.cc=%.o)
 		$(NVCC) $(CU_FLAGS) --ptx $< -o $@
 
 vector-add:	$(CU_OBJECTS) $(CC_OBJECTS)
+		$(NVCC) $^ -o $@
+
+sim:	$(OUR_CU_OBJECTS) $(CC_OBJECTS)
 		$(NVCC) $^ -o $@
 
 ptx:		$(CU_PTX) 
