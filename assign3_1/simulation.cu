@@ -77,16 +77,12 @@ double *simulate(const int i_max, const int t_max, const int block_size,
             exit(1);
         }
 
-        cout << "Cuda-Malloced it all\n";
-
         /* Copy data to the GPU */
         cudaMemcpy(deviceOld, old_array, i_max * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(deviceCurrent, current_array, i_max * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(deviceNext, next_array, i_max * sizeof(double), cudaMemcpyHostToDevice);
 
         /* Run the kernel */
-        cout << "Cuda-Copied to the GPU\n";
-
         int n_blocks = i_max / block_size;
         if (i_max % block_size != 0) {
             n_blocks++;
@@ -102,14 +98,11 @@ double *simulate(const int i_max, const int t_max, const int block_size,
             deviceCurrent = deviceNext;
             deviceNext = temp;
         }
-        cout << "Ran Cuda kernel\n";
 
         /* Copy data back to main memory */
         cudaMemcpy(old_array, deviceOld, i_max * sizeof(double), cudaMemcpyDeviceToHost);
         cudaMemcpy(current_array, deviceCurrent, i_max * sizeof(double), cudaMemcpyDeviceToHost);
         cudaMemcpy(next_array, deviceNext, i_max * sizeof(double), cudaMemcpyDeviceToHost);
-
-        cout << "Cudo-Copied from the GPU\n";
 
         /* Dealloc the memory on the GPU */
         cudaFree(deviceOld);
@@ -134,11 +127,9 @@ int main(int argc, char* argv[]) {
     fill(old_array, 1, i_max/4, 0, 2*3.14);
     fill(current_array, 2, i_max/4, 0, 2*3.14);
 
-    cout << "'Boutta start the simulation\n";
     waveTimer.start();
     result_array = simulate(i_max, t_max, block_size, old_array, current_array, next_array);
     waveTimer.stop();
-    cout << "Done w/da simulation'\n";
 
     cout << waveTimer;
     
