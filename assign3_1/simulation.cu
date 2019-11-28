@@ -90,6 +90,7 @@ double *simulate(const int i_max, const int t_max, const int block_size,
         for (t = 0; t < t_max; t++) {
             // Run one iteration
             i_computation<<<n_blocks, block_size>>>(i_max, deviceOld, deviceCurrent, deviceNext);
+            cudaDeviceSynchronize();
             cout << cudaGetErrorString(cudaGetLastError()) << endl;
 
             // Swap pointers
@@ -97,6 +98,8 @@ double *simulate(const int i_max, const int t_max, const int block_size,
             deviceOld = deviceCurrent;
             deviceCurrent = deviceNext;
             deviceNext = temp;
+
+            sync dan
         }
 
         /* Copy data back to main memory */
